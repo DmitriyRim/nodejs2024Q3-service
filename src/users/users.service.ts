@@ -12,10 +12,30 @@ export class UserService {
   }
 
   findById(id: string): User {
-    return this.users.find((user) => user.id === id);
+    const user = this.users.find((user) => user.id === id);
+
+    if (!user) {
+      throw new HttpException('not found', HttpStatus.NOT_FOUND);
+    }
+
+    return user;
   }
 
   createUser({ login, password }: CreateUserDto) {
+    if (typeof login !== 'string' || typeof password !== 'string') {
+      throw new HttpException(
+        'The username or password is incorrect',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (this.users.find((user) => user.login === login)) {
+      throw new HttpException(
+        'The login has already been registered',
+        HttpStatus.CONFLICT,
+      );
+    }
+
     const newUser = {
       id: randomUUID(),
       login,
@@ -32,30 +52,30 @@ export class UserService {
     return answer;
   }
 
-  hasUser(login: string): boolean {
-    return this.users.find((user) => user.login === login) ? true : false;
-  }
-
   updatePassword(id: string, oldPassword: string, newPassword: string): User {
-    const user = this.findById(id);
-    const index = this.users.findIndex((user) => user.id === id);
-
-    if (!user) {
-      throw new HttpException('not found', HttpStatus.NOT_FOUND);
+    if (!oldPassword || !newPassword) {
+      throw new HttpException('invalid dto', HttpStatus.BAD_REQUEST);
     }
+
+    const index = this.users.findIndex((user) => user.id === id);
+    const user = this.findById(id);
 
     if (user.password !== oldPassword) {
       throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
     }
 
-    this.users[index] = {
+    const newUserData = {
       ...user,
       password: newPassword,
       updatedAt: +new Date(),
       version: ++user.version,
     };
+    const answer = { ...newUserData };
 
-    return this.users[index];
+    delete answer.password;
+    this.users[index] = newUserData;
+
+    return answer;
   }
 
   deleteUser(id: string) {
