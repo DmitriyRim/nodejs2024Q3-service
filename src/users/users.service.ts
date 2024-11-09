@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { User } from './interfaces/user.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { randomUUID } from 'node:crypto';
@@ -31,5 +31,27 @@ export class UserService {
 
   hasUser(login: string): boolean {
     return this.users.find((user) => user.login === login) ? true : false;
+  }
+
+  updatePassword(id: string, oldPassword: string, newPassword: string): User {
+    const user = this.findById(id);
+    const index = this.users.findIndex((user) => user.id === id);
+
+    if (!user) {
+      throw new HttpException('not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (user.password !== oldPassword) {
+      throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
+    }
+
+    this.users[index] = {
+      ...user,
+      password: newPassword,
+      updatedAt: +new Date(),
+      version: ++user.version,
+    };
+
+    return this.users[index];
   }
 }

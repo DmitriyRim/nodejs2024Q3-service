@@ -7,8 +7,9 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Put,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, UpdatePasswordDto } from './dto/create-user.dto';
 import { UserService } from './users.service';
 import { User } from './interfaces/user.interface';
 
@@ -48,4 +49,15 @@ export class UsersController {
     }
     return this.userService.createUser(createUserDto);
   }
+
+  @Put(':id')
+  async updatePassword(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() { oldPassword, newPassword }: UpdatePasswordDto,
+  ) {
+    return this.userService.updatePassword(id, oldPassword, newPassword);
+  }
 }
+// Сервер должен ответить кодом  status code 200 и обновлённой записью, если запрос корректен
+// Сервер должен ответить кодом  status code 404 и соответствующим сообщением, если запись с id === userId не существует
+// Сервер должен ответить кодом  status code 403 и соответствующим сообщением, если oldPassword неверно
