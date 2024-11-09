@@ -1,7 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Header,
+  HttpCode,
   HttpException,
   HttpStatus,
   Param,
@@ -23,7 +26,8 @@ export class UsersController {
   }
 
   @Get(':id')
-  async findById(@Param('id', new ParseUUIDPipe()) id: string) {
+  @Header('Accept', 'application/json')
+  async findById(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     const user = this.userService.findById(id);
 
     if (!user) {
@@ -52,12 +56,19 @@ export class UsersController {
 
   @Put(':id')
   async updatePassword(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() { oldPassword, newPassword }: UpdatePasswordDto,
   ) {
     return this.userService.updatePassword(id, oldPassword, newPassword);
   }
+
+  @Delete(':id')
+  @HttpCode(204)
+  async deleteUser(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ) {
+    return this.userService.deleteUser(id);
+  }
 }
-// Сервер должен ответить кодом  status code 200 и обновлённой записью, если запрос корректен
-// Сервер должен ответить кодом  status code 404 и соответствующим сообщением, если запись с id === userId не существует
-// Сервер должен ответить кодом  status code 403 и соответствующим сообщением, если oldPassword неверно
+// Сервер должен ответить кодом status code 204, если запись найдена и удалена
+// Сервер должен ответить кодом status code 404 и соответствующим сообщением, если запись с id === userId не существует

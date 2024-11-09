@@ -24,9 +24,12 @@ export class UserService {
       createdAt: +new Date(),
       updatedAt: +new Date(),
     };
+    const answer = { ...newUser };
+
+    delete answer.password;
 
     this.users.push(newUser);
-    return newUser;
+    return answer;
   }
 
   hasUser(login: string): boolean {
@@ -53,5 +56,15 @@ export class UserService {
     };
 
     return this.users[index];
+  }
+
+  deleteUser(id: string) {
+    const index = this.users.findIndex((user) => user.id === id);
+
+    if (index === -1) {
+      throw new HttpException('not found', HttpStatus.NOT_FOUND);
+    }
+
+    this.users.splice(index, 1);
   }
 }
