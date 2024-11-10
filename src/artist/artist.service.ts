@@ -33,15 +33,26 @@ export class ArtistService {
     return artist;
   }
 
-  update(id: number, updateArtistDto: UpdateArtistDto) {
-    return `This action updates a #${id} artist`;
+  update(id: string, updateArtistDto: UpdateArtistDto) {
+    const index = this.artists.findIndex((artist) => artist.id === id);
+
+    if (index === -1) {
+      throw new HttpException('not found', HttpStatus.NOT_FOUND);
+    }
+
+    this.validateDto(updateArtistDto);
+    this.artists[index] = {
+      ...this.artists[index],
+      ...updateArtistDto,
+    };
+    return this.artists[index];
   }
 
   remove(id: number) {
     return `This action removes a #${id} artist`;
   }
 
-  validateDto(createArtistDto: CreateArtistDto) {
+  validateDto(createArtistDto: CreateArtistDto | UpdateArtistDto) {
     const { name, grammy } = createArtistDto;
 
     if (!(typeof name === 'string' && typeof grammy === 'string')) {
