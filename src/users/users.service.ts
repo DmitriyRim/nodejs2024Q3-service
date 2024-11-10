@@ -7,11 +7,11 @@ import { randomUUID } from 'node:crypto';
 export class UserService {
   private readonly users: User[] = [];
 
-  findAll() {
+  findAll(): User[] {
     return this.users;
   }
 
-  findById(id: string): User {
+  findOne(id: string): User {
     const user = this.users.find((user) => user.id === id);
 
     if (!user) {
@@ -21,7 +21,7 @@ export class UserService {
     return user;
   }
 
-  createUser({ login, password }: CreateUserDto) {
+  create({ login, password }: CreateUserDto): User {
     if (typeof login !== 'string' || typeof password !== 'string') {
       throw new HttpException(
         'The username or password is incorrect',
@@ -52,13 +52,13 @@ export class UserService {
     return answer;
   }
 
-  updatePassword(id: string, oldPassword: string, newPassword: string): User {
+  update(id: string, oldPassword: string, newPassword: string): User {
     if (!oldPassword || !newPassword) {
       throw new HttpException('invalid dto', HttpStatus.BAD_REQUEST);
     }
 
     const index = this.users.findIndex((user) => user.id === id);
-    const user = this.findById(id);
+    const user = this.findOne(id);
 
     if (user.password !== oldPassword) {
       throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
@@ -78,7 +78,7 @@ export class UserService {
     return answer;
   }
 
-  deleteUser(id: string) {
+  remove(id: string) {
     const index = this.users.findIndex((user) => user.id === id);
 
     if (index === -1) {

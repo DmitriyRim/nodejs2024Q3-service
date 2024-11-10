@@ -26,12 +26,12 @@ export class UsersController {
   @Get(':id')
   @Header('Accept', 'application/json')
   async findById(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    return this.userService.findById(id);
+    return this.userService.findOne(id);
   }
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.createUser(createUserDto);
+    return this.userService.create(createUserDto);
   }
 
   @Put(':id')
@@ -39,7 +39,7 @@ export class UsersController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() { oldPassword, newPassword }: UpdatePasswordDto,
   ) {
-    return this.userService.updatePassword(id, oldPassword, newPassword);
+    return this.userService.update(id, oldPassword, newPassword);
   }
 
   @Delete(':id')
@@ -47,6 +47,6 @@ export class UsersController {
   async deleteUser(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ) {
-    return this.userService.deleteUser(id);
+    return this.userService.remove(id);
   }
 }
