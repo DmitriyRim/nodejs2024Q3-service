@@ -35,6 +35,7 @@ export class AlbumController {
   }
 
   @Put(':id')
+  @Header('Accept', 'application/json')
   update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateAlbumDto: UpdateAlbumDto,

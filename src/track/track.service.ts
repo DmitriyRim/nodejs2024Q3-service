@@ -77,10 +77,10 @@ export class TrackService {
     );
   }
 
-  removeArtists(id: string) {
+  removeValueById(id: string, key: 'artistId' | 'albumId') {
     this.tracks.forEach((track, index) => {
-      if (track.artistId === id) {
-        this.tracks[index].artistId = null;
+      if (track[key] === id) {
+        this.tracks[index][key] = null;
       }
     });
   }

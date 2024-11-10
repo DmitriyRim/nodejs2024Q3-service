@@ -8,7 +8,10 @@ import { AlbumService } from 'src/album/album.service';
 
 @Injectable()
 export class ArtistService {
-  constructor(private readonly trackService: TrackService, private readonly albumService: AlbumService) {}
+  constructor(
+    private readonly trackService: TrackService,
+    private readonly albumService: AlbumService,
+  ) {}
   private readonly artists: Artist[] = [];
 
   findAll() {
@@ -57,8 +60,8 @@ export class ArtistService {
     if (index === -1) {
       throw new HttpException('not found', HttpStatus.NOT_FOUND);
     }
-    this.albumService.removeArtists(id);
-    this.trackService.removeArtists(id);
+    this.albumService.removeValueById(id);
+    this.trackService.removeValueById(id, 'artistId');
     this.artists.splice(index, 1);
   }
 

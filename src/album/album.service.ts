@@ -3,10 +3,13 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './interfaces/album.interface';
 import { randomUUID } from 'crypto';
+import { TrackService } from 'src/track/track.service';
 
 @Injectable()
 export class AlbumService {
   private readonly albums: Album[] = [];
+
+  constructor(private readonly trackService: TrackService) {}
 
   create(createAlbumDto: CreateAlbumDto) {
     this.validateDto(createAlbumDto);
@@ -35,7 +38,7 @@ export class AlbumService {
   }
 
   update(id: string, updateAlbumDto: UpdateAlbumDto) {
-    const index = this.albums.findIndex((album) => (album.id = id));
+    const index = this.albums.findIndex((album) => album.id === id);
     this.validateDto(updateAlbumDto);
 
     if (index === -1) {
@@ -53,13 +56,14 @@ export class AlbumService {
   }
 
   remove(id: string) {
-    const index = this.albums.findIndex((album) => (album.id = id));
+    const index = this.albums.findIndex((album) => album.id === id);
 
     if (index === -1) {
       throw new HttpException('not found', HttpStatus.NOT_FOUND);
     }
 
     this.albums.splice(index, 1);
+    this.trackService.removeValueById(id, 'albumId');
   }
 
   validateDto(dto: CreateAlbumDto | UpdateAlbumDto) {
@@ -78,7 +82,8 @@ export class AlbumService {
       );
     }
   }
-  removeArtists(id: string) {
+
+  removeValueById(id: string) {
     this.albums.forEach((album, index) => {
       if (album.artistId === id) {
         this.albums[index].artistId = null;
