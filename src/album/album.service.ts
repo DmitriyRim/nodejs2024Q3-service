@@ -42,11 +42,24 @@ export class AlbumService {
       throw new HttpException('not found', HttpStatus.NOT_FOUND);
     }
 
-    return `This action updates a #${id} album`;
+    const updatedAlbum = {
+      ...this.albums[index],
+      ...updateAlbumDto,
+    };
+
+    this.albums[index] = updatedAlbum;
+
+    return updatedAlbum;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} album`;
+  remove(id: string) {
+    const index = this.albums.findIndex((album) => (album.id = id));
+
+    if (index === -1) {
+      throw new HttpException('not found', HttpStatus.NOT_FOUND);
+    }
+
+    this.albums.splice(index, 1);
   }
 
   validateDto(dto: CreateAlbumDto | UpdateAlbumDto) {
@@ -54,10 +67,9 @@ export class AlbumService {
 
     if (
       !(
-        (typeof name === 'string' &&
-          Number.isInteger(year) &&
-          typeof artistId === 'string') ||
-        artistId === null
+        typeof name === 'string' &&
+        Number.isInteger(year) &&
+        (typeof artistId === 'string' || artistId === null)
       )
     ) {
       throw new HttpException(
@@ -65,5 +77,12 @@ export class AlbumService {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+  removeArtists(id: string) {
+    this.albums.forEach((album, index) => {
+      if (album.artistId === id) {
+        this.albums[index].artistId = null;
+      }
+    });
   }
 }

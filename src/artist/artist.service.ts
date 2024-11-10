@@ -4,10 +4,11 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './interfaces/artist.interface';
 import { randomUUID } from 'crypto';
 import { TrackService } from 'src/track/track.service';
+import { AlbumService } from 'src/album/album.service';
 
 @Injectable()
 export class ArtistService {
-  constructor(private readonly trackService: TrackService) {}
+  constructor(private readonly trackService: TrackService, private readonly albumService: AlbumService) {}
   private readonly artists: Artist[] = [];
 
   findAll() {
@@ -56,6 +57,7 @@ export class ArtistService {
     if (index === -1) {
       throw new HttpException('not found', HttpStatus.NOT_FOUND);
     }
+    this.albumService.removeArtists(id);
     this.trackService.removeArtists(id);
     this.artists.splice(index, 1);
   }
