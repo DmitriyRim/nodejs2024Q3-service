@@ -76,4 +76,12 @@ export class TrackService {
       HttpStatus.BAD_REQUEST,
     );
   }
+
+  removeArtists(id: string) {
+    this.tracks.forEach((track, index) => {
+      if (track.artistId === id) {
+        this.tracks[index].artistId = null;
+      }
+    });
+  }
 }
