@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './interfaces/artist.interface';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class ArtistService {
@@ -22,7 +23,14 @@ export class ArtistService {
   }
 
   create(createArtistDto: CreateArtistDto) {
-    return 'This action adds a new artist';
+    this.validateDto(createArtistDto);
+    const artist = {
+      ...createArtistDto,
+      id: randomUUID(),
+    };
+
+    this.artists.push(artist);
+    return artist;
   }
 
   update(id: number, updateArtistDto: UpdateArtistDto) {
@@ -31,5 +39,16 @@ export class ArtistService {
 
   remove(id: number) {
     return `This action removes a #${id} artist`;
+  }
+
+  validateDto(createArtistDto: CreateArtistDto) {
+    const { name, grammy } = createArtistDto;
+
+    if (!(typeof name === 'string' && typeof grammy === 'string')) {
+      throw new HttpException(
+        'does not contain required fields',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }
