@@ -75,4 +75,8 @@ export class ArtistService {
       );
     }
   }
+
+  hasById(id: string): boolean {
+    return this.artists.find((artist) => artist.id === id) ? true : false;
+  }
 }

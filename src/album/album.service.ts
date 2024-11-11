@@ -90,4 +90,8 @@ export class AlbumService {
       }
     });
   }
+
+  hasById(id: string): boolean {
+    return this.albums.find((album) => album.id === id) ? true : false;
+  }
 }

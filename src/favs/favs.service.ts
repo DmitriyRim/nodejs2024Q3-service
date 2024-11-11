@@ -1,6 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { CreateFavDto } from './dto/create-fav.dto';
-import { UpdateFavDto } from './dto/update-fav.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Fav } from './interfaces/fav.interface';
 import { TrackService } from 'src/track/track.service';
 import { AlbumService } from 'src/album/album.service';
@@ -20,8 +18,24 @@ export class FavsService {
     private readonly albumService: AlbumService,
   ) {}
 
-  create(createFavDto: CreateFavDto) {
-    return 'This action adds a new fav';
+  addFavorite(type: string, id: string) {
+    const services = {
+      albums: this.albumService,
+      artists: this.artistService,
+      tracks: this.trackService,
+    };
+
+    if (
+      !Object.keys(this.favorites).includes(type) &&
+      services[type].hasById(id)
+    ) {
+      throw new HttpException(
+        `${type} with ${id} does not exist`,
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    this.favorites[type].push(id);
   }
 
   findAll() {
@@ -40,14 +54,6 @@ export class FavsService {
     });
 
     return res;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} fav`;
-  }
-
-  update(id: number, updateFavDto: UpdateFavDto) {
-    return `This action updates a #${id} fav`;
   }
 
   remove(id: number) {

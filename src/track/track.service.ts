@@ -84,4 +84,8 @@ export class TrackService {
       }
     });
   }
+
+  hasById(id: string): boolean {
+    return this.tracks.find((track) => track.id === id) ? true : false;
+  }
 }
