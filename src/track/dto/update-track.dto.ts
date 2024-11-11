@@ -1,6 +1,4 @@
-export interface UpdateTrackDto {
-  name: string;
-  duration: number;
-  artistId: any;
-  albumId: any;
-}
+import { PartialType } from '@nestjs/swagger';
+import { CreateTrackDto } from './create-track.dto';
+
+export class UpdateTrackDto extends PartialType(CreateTrackDto) {}
