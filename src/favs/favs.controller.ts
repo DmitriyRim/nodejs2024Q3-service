@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { FavsService } from './favs.service';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { Fav, ResponseFav } from './interfaces/fav.interface';
+import { ResponseFav } from './interfaces/fav.interface';
 
 @Controller('favs')
 export class FavsController {
