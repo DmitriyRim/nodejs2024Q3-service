@@ -12,20 +12,26 @@ export class FavsService {
     tracks: [],
   };
 
+  services: {
+    albums: AlbumService;
+    artists: ArtistService;
+    tracks: TrackService;
+  };
+
   constructor(
     private readonly artistService: ArtistService,
     private readonly trackService: TrackService,
     private readonly albumService: AlbumService,
-  ) {}
-
-  addFavorite(type: string, id: string) {
-    const services = {
+  ) {
+    this.services = {
       albums: this.albumService,
       artists: this.artistService,
       tracks: this.trackService,
     };
+  }
 
-    if (!services[type].hasById(id)) {
+  addFavorite(type: string, id: string) {
+    if (!this.services[type].hasById(id)) {
       throw new HttpException(
         `${type} with ${id} does not exist`,
         HttpStatus.UNPROCESSABLE_ENTITY,
@@ -38,16 +44,11 @@ export class FavsService {
   findAll() {
     const res = {};
     const keys = Object.keys(this.favorites);
-    const services = {
-      albums: this.albumService,
-      artists: this.artistService,
-      tracks: this.trackService,
-    };
 
     keys.forEach((key) => {
       res[key] = this.favorites[key]
-        .filter((id: string) => services[key].hasById(id))
-        .map((id: string) => services[key].findOne(id));
+        .filter((id: string) => this.services[key].hasById(id))
+        .map((id: string) => this.services[key].findOne(id));
     });
 
     return res;

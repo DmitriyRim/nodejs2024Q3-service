@@ -24,17 +24,18 @@ export class TrackController {
   }
 
   @Get(':id')
-  @Header('Accept', 'application/json')
   findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     return this.trackService.findOne(id);
   }
 
   @Post()
+  @Header('Accept', 'application/json')
   create(@Body() createTrackDto: CreateTrackDto) {
     return this.trackService.create(createTrackDto);
   }
 
   @Put(':id')
+  @Header('Accept', 'application/json')
   update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateTrackDto: UpdateTrackDto,

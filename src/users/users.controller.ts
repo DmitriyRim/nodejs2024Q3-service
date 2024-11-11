@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Header,
   HttpCode,
   Param,
   ParseUUIDPipe,
@@ -24,7 +23,6 @@ export class UsersController {
   }
 
   @Get(':id')
-  @Header('Accept', 'application/json')
   async findById(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     return this.userService.findOne(id);
   }

@@ -8,6 +8,7 @@ import {
   Put,
   ParseUUIDPipe,
   HttpCode,
+  Header,
 } from '@nestjs/common';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
@@ -28,11 +29,13 @@ export class ArtistController {
   }
 
   @Post()
+  @Header('Accept', 'application/json')
   create(@Body() createArtistDto: CreateArtistDto) {
     return this.artistService.create(createArtistDto);
   }
 
   @Put(':id')
+  @Header('Accept', 'application/json')
   update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateArtistDto: UpdateArtistDto,

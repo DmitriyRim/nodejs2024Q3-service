@@ -30,6 +30,7 @@ export class AlbumController {
   }
 
   @Post()
+  @Header('Accept', 'application/json')
   create(@Body() createAlbumDto: CreateAlbumDto) {
     return this.albumService.create(createAlbumDto);
   }
