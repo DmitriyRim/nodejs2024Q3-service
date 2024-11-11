@@ -25,10 +25,7 @@ export class FavsService {
       tracks: this.trackService,
     };
 
-    if (
-      !Object.keys(this.favorites).includes(type) &&
-      services[type].hasById(id)
-    ) {
+    if (!services[type].hasById(id)) {
       throw new HttpException(
         `${type} with ${id} does not exist`,
         HttpStatus.UNPROCESSABLE_ENTITY,
@@ -39,24 +36,30 @@ export class FavsService {
   }
 
   findAll() {
+    const res = {};
     const keys = Object.keys(this.favorites);
     const services = {
       albums: this.albumService,
       artists: this.artistService,
       tracks: this.trackService,
     };
-    const res = {};
 
     keys.forEach((key) => {
-      res[key] = this.favorites[key].map((id: string) => {
-        services[key].findOne(id);
-      });
+      res[key] = this.favorites[key]
+        .filter((id: string) => services[key].hasById(id))
+        .map((id: string) => services[key].findOne(id));
     });
 
     return res;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} fav`;
+  remove(type: string, id: string) {
+    const index = this.favorites[type].findIndex((favs: string) => favs === id);
+
+    if (index === -1) {
+      throw new HttpException('not found', HttpStatus.NOT_FOUND);
+    }
+
+    this.favorites[type].splice(index, 1);
   }
 }

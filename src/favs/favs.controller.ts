@@ -5,6 +5,7 @@ import {
   Param,
   Delete,
   ParseUUIDPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { FavsService } from './favs.service';
 
@@ -17,7 +18,7 @@ export class FavsController {
     @Param('favoriteType') favoriteType: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ) {
-    return this.favsService.addFavorite(favoriteType, id);
+    return this.favsService.addFavorite(`${favoriteType}s`, id);
   }
 
   @Get()
@@ -25,8 +26,12 @@ export class FavsController {
     return this.favsService.findAll();
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.favsService.remove(+id);
+  @Delete(':favoriteType/:id')
+  @HttpCode(204)
+  remove(
+    @Param('favoriteType') favoriteType: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ) {
+    return this.favsService.remove(`${favoriteType}s`, id);
   }
 }
